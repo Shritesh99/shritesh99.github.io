@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
 import { AppProvider } from '@/context/AppContext';
+import { seo } from '@/data/portfolio';
 import '../globals.css';
 
 const geistSans = Geist({
@@ -31,9 +32,35 @@ const ballega = localFont({
   display: 'swap',
 });
 
+// SEO copy lives in content/portfolio.yaml (seo:) — edit it there.
+// metadataBase makes the relative /preview.png resolve to an absolute URL,
+// which Twitter/WhatsApp require for link-preview images.
 export const metadata: Metadata = {
-  title: 'Portfolio',
-  description: 'Next.js 16 + React 19 + Three.js Portfolio',
+  metadataBase: new URL(seo.url),
+  title: seo.title,
+  description: seo.description,
+  keywords: seo.keywords,
+  authors: [{ name: seo.author, url: seo.url }],
+  creator: seo.author,
+  alternates: { canonical: '/' },
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: 'website',
+    url: seo.url,
+    siteName: seo.siteName,
+    title: seo.title,
+    description: seo.description,
+    images: [
+      { url: '/preview.png', width: 1131, height: 637, alt: seo.title },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: seo.title,
+    description: seo.description,
+    creator: seo.twitterHandle,
+    images: ['/preview.png'],
+  },
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },

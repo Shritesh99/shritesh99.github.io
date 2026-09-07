@@ -34,3 +34,8 @@ next-env.d.ts
 .netlify
 
 .history
+# LinkedIn export — contains personal contact details, never commit
+/profile.pdf
+
+# Static export output (deployed by GitHub Actions)
+/out

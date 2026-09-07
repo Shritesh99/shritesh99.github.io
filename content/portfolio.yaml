@@ -1,0 +1,360 @@
+# ============================================================================
+# Site content — the single file to edit when updating the portfolio.
+#
+# Parsed at BUILD time (webpack yaml-loader) and inlined into the bundle, so
+# the site never fetches content at runtime. After editing: rebuild/deploy.
+#
+# Shape notes:
+# - skills: category must be one of frontend | backend | devops | cloud |
+#   blockchain. The FIRST 10 per category ride the 3D sphere (order matters);
+#   a skill only shows an icon/colour if it's mapped in
+#   components/pages/Skills.tsx (SKILL_ICONS / SKILL_COLORS).
+# - communityEvents: type must be conference | hackathon | meetup | talk.
+# - contact.links: icon must be one of github | linkedin | twitter | x |
+#   instagram | telegram | mail (components/pages/Contact.tsx LINK_ICONS).
+# - contact.handle is DISPLAY-ONLY here: the handwritten "@rxShri99" strokes
+#   are generated into data/handwriting.ts by scripts/build-handwriting.mjs —
+#   regenerate them if the handle changes.
+# ============================================================================
+
+# SEO + link previews (Open Graph / Twitter cards). `url` must be the
+# canonical deployed origin — change it if you move to a custom domain.
+# The preview image lives at public/preview.png.
+seo:
+  title: Shritesh Jamulkar — Software Engineer
+  siteName: Shritesh Jamulkar
+  author: Shritesh Jamulkar
+  description: >-
+    Software engineer building fintech systems at Booking.com — previously
+    e-commerce at THG and telecom at Samsung R&D. Full-stack work spanning
+    immersive 3D web experiences, distributed systems and blockchain. MSc
+    Computer Science, Trinity College Dublin.
+  url: https://rxshri99.live
+  twitterHandle: '@rxshri99'
+  keywords:
+    - Shritesh Jamulkar
+    - Software Engineer
+    - Full Stack Developer
+    - Fintech
+    - Three.js
+    - React
+    - Java Spring Boot
+    - Blockchain
+    - London
+
+hero:
+  name: I am a passionate Developer!
+
+about:
+  bio: >-
+    I build fintech systems at Booking.com — before that, e-commerce
+    microservices at THG and telecom platforms at Samsung R&D, with an MSc in
+    Computer Science from Trinity College Dublin. I like work that spans the
+    whole stack: scroll-driven 3D up front, distributed systems underneath,
+    and the odd blockchain experiment in between. When I'm not shipping, I'm
+    at a hackathon or a meetup.
+  highlights:
+    - 5+ years building for the web
+    - Frontend, backend & cloud
+    - 3D / WebGL experiences
+    - Blockchain & Web3 curious
+
+skillCategories:
+  frontend: Frontend
+  backend: Backend
+  devops: DevOps
+  cloud: Cloud
+  blockchain: Blockchain
+
+skills:
+  # Frontend (first 10 ride the sphere)
+  - { name: React, category: frontend }
+  - { name: Next.js, category: frontend }
+  - { name: TypeScript, category: frontend }
+  - { name: Three.js, category: frontend }
+  - { name: Tailwind CSS, category: frontend }
+  - { name: HTML / CSS, category: frontend }
+  - { name: JavaScript, category: frontend }
+  - { name: Redux, category: frontend }
+  - { name: Vue.js, category: frontend }
+  - { name: Svelte, category: frontend }
+  - { name: Vite, category: frontend }
+  - { name: Webpack, category: frontend }
+  - { name: Sass, category: frontend }
+  - { name: Framer Motion, category: frontend }
+  - { name: GSAP, category: frontend }
+  - { name: Storybook, category: frontend }
+  - { name: Jest, category: frontend }
+  - { name: Cypress, category: frontend }
+  - { name: Figma, category: frontend }
+  - { name: Astro, category: frontend }
+  # Backend
+  - { name: Node.js, category: backend }
+  - { name: Python, category: backend }
+  - { name: REST APIs, category: backend }
+  - { name: GraphQL, category: backend }
+  - { name: PostgreSQL, category: backend }
+  - { name: MongoDB, category: backend }
+  - { name: Express, category: backend }
+  - { name: NestJS, category: backend }
+  - { name: Django, category: backend }
+  - { name: FastAPI, category: backend }
+  - { name: Go, category: backend }
+  - { name: Rust, category: backend }
+  - { name: Redis, category: backend }
+  - { name: MySQL, category: backend }
+  - { name: Prisma, category: backend }
+  - { name: Kafka, category: backend }
+  - { name: RabbitMQ, category: backend }
+  - { name: Elasticsearch, category: backend }
+  - { name: Firebase, category: backend }
+  - { name: Supabase, category: backend }
+  # DevOps
+  - { name: Docker, category: devops }
+  - { name: Kubernetes, category: devops }
+  - { name: CI/CD, category: devops }
+  - { name: GitHub Actions, category: devops }
+  - { name: Linux, category: devops }
+  - { name: Git, category: devops }
+  - { name: Terraform, category: devops }
+  - { name: Ansible, category: devops }
+  - { name: Jenkins, category: devops }
+  - { name: GitLab, category: devops }
+  - { name: Nginx, category: devops }
+  - { name: Grafana, category: devops }
+  - { name: Prometheus, category: devops }
+  - { name: Helm, category: devops }
+  - { name: Argo, category: devops }
+  - { name: Bash, category: devops }
+  - { name: Ubuntu, category: devops }
+  - { name: Podman, category: devops }
+  - { name: Vagrant, category: devops }
+  - { name: GitHub, category: devops }
+  # Cloud
+  - { name: AWS, category: cloud }
+  - { name: Google Cloud, category: cloud }
+  - { name: Cloudflare, category: cloud }
+  - { name: Vercel, category: cloud }
+  - { name: Netlify, category: cloud }
+  - { name: Serverless, category: cloud }
+  - { name: DigitalOcean, category: cloud }
+  - { name: Fly.io, category: cloud }
+  - { name: Railway, category: cloud }
+  - { name: Render, category: cloud }
+  - { name: Fastly, category: cloud }
+  - { name: OpenStack, category: cloud }
+  - { name: Akamai, category: cloud }
+  - { name: Alibaba Cloud, category: cloud }
+  - { name: Hetzner, category: cloud }
+  - { name: Vultr, category: cloud }
+  - { name: Scaleway, category: cloud }
+  - { name: OVH, category: cloud }
+  - { name: Pulumi, category: cloud }
+  - { name: UpCloud, category: cloud }
+  # Blockchain
+  - { name: Solidity, category: blockchain }
+  - { name: Ethereum, category: blockchain }
+  - { name: Hardhat, category: blockchain }
+  - { name: Web3.js, category: blockchain }
+  - { name: Smart Contracts, category: blockchain }
+  - { name: IPFS, category: blockchain }
+  - { name: Bitcoin, category: blockchain }
+  - { name: Solana, category: blockchain }
+  - { name: Polygon, category: blockchain }
+  - { name: Chainlink, category: blockchain }
+  - { name: Polkadot, category: blockchain }
+  - { name: Binance, category: blockchain }
+  - { name: Cardano, category: blockchain }
+  - { name: OpenZeppelin, category: blockchain }
+  - { name: WalletConnect, category: blockchain }
+  - { name: NEAR, category: blockchain }
+  - { name: Litecoin, category: blockchain }
+  - { name: XRP, category: blockchain }
+  - { name: Stellar, category: blockchain }
+  - { name: Optimism, category: blockchain }
+
+projects:
+  - title: Portfolio Website
+    description: >-
+      An immersive personal portfolio built with Next.js, Three.js, and custom
+      GLSL shaders featuring scroll-driven 3D ring animations.
+    tech: [Next.js, Three.js, GLSL, Tailwind CSS]
+    github: https://github.com/Shritesh99/shritesh99.github.io
+    live: https://shritesh99.github.io
+  - title: Project Two
+    description: >-
+      A full-stack application demonstrating modern development practices with
+      real-time data synchronisation.
+    tech: [React, Node.js, PostgreSQL, WebSockets]
+    github: '#'
+  - title: Project Three
+    description: >-
+      A developer tool that streamlines workflow automation and improves team
+      productivity.
+    tech: [TypeScript, Python, Docker, REST API]
+    github: '#'
+    live: '#'
+  - title: Project Four
+    description: >-
+      An open-source library providing reusable utilities for building
+      interactive web experiences.
+    tech: [TypeScript, WebGL, npm]
+    github: '#'
+
+experiences:
+  - company: Booking.com — London, UK
+    role: Software Engineer
+    period: 2026 — Present
+    achievements:
+      - >-
+        Architected and built a PSP reconciliation platform with Java Spring
+        Boot and React to ingest, match, and reconcile daily PSP settlement
+        files across 6 payment service providers.
+      - >-
+        Designed AWS infrastructure with Terraform and implemented CI/CD
+        through GitLab and Harness to deploy Kubernetes workloads and AWS
+        Lambda functions for automated settlement processing and daily
+        reporting.
+      - >-
+        Designed and developed a Data Quality Framework for Apache Airflow and
+        Astronomer reporting tools, supporting 200+ finance workflows to
+        ensure the accuracy and reliability of financial data.
+  - company: THG — Manchester, UK
+    role: Software Engineer
+    period: 2023 — 2025
+    achievements:
+      - >-
+        Architected scalable microservices including Stockmanager,
+        Dropshipmanager, Allocation service and Stock UI with Spring and
+        Angular, delivering front-end and back-end e-commerce solutions with
+        over 90% unit test coverage.
+      - >-
+        Moved legacy Tomcat-based servers to a Kubernetes-based architecture
+        and designed Jenkins pipelines, cutting deployment time from 30 to 10
+        minutes with Docker-based containerized deployment.
+      - >-
+        Engineered a multi-database layer spanning Microsoft SQL Server,
+        CockroachDB and CouchDB (SQL & NoSQL), reducing database overhead by
+        40% through optimized batched queries.
+      - >-
+        Led 3+ key client integrations (Warehouse, Fulfillment, Stock, Orders)
+        processing 500K+ SKU updates daily, reducing stock discrepancies by
+        85%, and owned production support for critical integrations.
+  - company: Samsung R&D — Bengaluru, India
+    role: Software Engineer
+    period: 2021 — 2023
+    achievements:
+      - >-
+        Full-stack developer on the Java Spring-based LSM (LTE System
+        Manager) in the Networks and OAM team, part of the Element Management
+        System handling telecom network elements.
+      - >-
+        Built and refined EMS capabilities enabling 5G network administration
+        for multiple clients, focusing on the Fault module.
+      - >-
+        Provided TAC3 support for 4G networks of JIO, SKT, KT, UQ, KDDI, LGT,
+        KPS and others.
+      - >-
+        Wrote Selenium tests with Robot Framework and JUnit for the EMS
+        product code.
+  - company: The Linux Foundation
+    role: Hyperledger Mentee
+    period: 2021
+    achievements:
+      - >-
+        Implemented cross-chain contract interoperability between Hyperledger
+        Fabric and Hyperledger Besu in the "ServiceMesh" way.
+      - >-
+        Developed a cross-chain Solidity smart contract with a 2-phase
+        locking mechanism.
+      - >-
+        Engineered a Java Spring sidecar relay listening for Solidity events
+        and orchestrating transactions on other relays over REST APIs.
+  - company: Zenithec Techware — Raipur, India
+    role: iOS Developer
+    period: 2019 — 2021
+    achievements:
+      - Built the PetBro Business iOS application from scratch.
+      - >-
+        Structured the app on MVVM with RxSwift, using RxMoya as the network
+        abstraction layer and RxNuke for image caching.
+  - company: allsoft — Raipur, India
+    role: Software Developer Intern
+    period: '2019'
+    achievements:
+      - Worked on the GFI Auction project built on the Angular framework.
+      - Integrated NgRx Store for reactive state management.
+
+education:
+  - school: Trinity College Dublin
+    degree: MSc Computer Science — Future Networked Systems
+    period: 2022 — 2023
+  - school: National Institute of Technology, Raipur
+    degree: BTech Computer Science
+    period: 2017 — 2021
+
+eventTypeLabels:
+  conference: Conference
+  hackathon: Hackathon
+  meetup: Meetup
+  talk: Talk
+
+communityEvents:
+  - title: Conference Talk
+    type: conference
+    date: '2025'
+    location: City, Country
+    description: >-
+      Spoke about building immersive 3D experiences on the web with React
+      Three Fiber.
+    link: '#'
+    image: https://picsum.photos/seed/conference/1600/900
+  - title: Hackathon — Winner
+    type: hackathon
+    date: '2024'
+    location: City, Country
+    description: >-
+      Built a working prototype in 36 hours and took first place among 120
+      teams.
+    link: '#'
+    image: https://picsum.photos/seed/hackathon/1600/900
+  - title: Tech Meetup
+    type: meetup
+    date: '2024'
+    location: City, Country
+    description: >-
+      Organised a local developer meetup on modern frontend tooling and
+      performance.
+    image: https://picsum.photos/seed/meetup/1600/900
+  - title: Lightning Talk
+    type: talk
+    date: '2023'
+    location: Online
+    description: >-
+      Gave a lightning talk on GLSL shaders for designers and frontend
+      engineers.
+    image: https://picsum.photos/seed/talk/1600/900
+
+quote:
+  tagline: log(😅) = 💧log(😄)
+  text: When problems grows exponentially, solve them logarithmically.
+  author: Shri
+
+contact:
+  handle: '@rxShri99'
+  email: rxshri99@gmail.com
+  links:
+    - { label: GitHub, url: 'https://github.com/rxShri99', icon: github }
+    - {
+        label: LinkedIn,
+        url: 'https://linkedin.com/in/rxShri99',
+        icon: linkedin,
+      }
+    - { label: X, url: 'https://x.com/rxshri99', icon: x }
+    - {
+        label: Instagram,
+        url: 'https://instagram.com/rxShri99',
+        icon: instagram,
+      }
+    - { label: Telegram, url: 'https://t.me/rxShri99', icon: telegram }
+    - { label: Mail, url: 'mailto:rxshri99@gmail.com', icon: mail }

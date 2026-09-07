@@ -35,14 +35,20 @@ jobs:
       - name: Build
         run: npm run build
 
-  deploy:
+  # Production: static export deployed to GitHub Pages (serves rxshri99.live).
+  deploy-pages:
     needs: check
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     env:
-      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-      NETLIFY_SITE_ID: ${{ github.ref == 'refs/heads/master' && secrets.NETLIFY_SITE_ID_PROD || secrets.NETLIFY_SITE_ID_DEV }}
-      NEXT_PUBLIC_APP_ENV: ${{ github.ref == 'refs/heads/master' && 'production' || 'development' }}
+      NEXT_PUBLIC_APP_ENV: production
     steps:
       - uses: actions/checkout@v4
 
@@ -54,5 +60,43 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Deploy to Netlify (production)
+      - name: Build (static export → ./out)
+        run: npm run build
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          # Switches the Pages source from legacy branch-serving to Actions.
+          enablement: true
+
+      - name: Upload site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: out
+
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # Preview: dev branch still deploys to Netlify.
+  deploy-preview:
+    needs: check
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+    env:
+      NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+      NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID_DEV }}
+      NEXT_PUBLIC_APP_ENV: development
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy to Netlify (preview)
         run: npx netlify-cli@latest deploy --build --prod

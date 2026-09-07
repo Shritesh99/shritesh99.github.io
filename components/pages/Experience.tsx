@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { experiences } from '@/data/portfolio';
+import { education, experiences } from '@/data/portfolio';
 import { PAGE_HEIGHTS_VH } from '@/constants';
 import Parallax from '@/components/Parallax';
 
@@ -107,6 +107,38 @@ export default function Experience() {
                     </li>
                   ))}
                 </ul>
+              </div>
+            </div>
+          ))}
+
+          {/* Education rides the same timeline, after the work entries */}
+          <div className="grid grid-cols-[5.5rem_2rem_1fr] md:grid-cols-[13rem_3rem_1fr] items-start pb-8 md:pb-10">
+            <div />
+            <div />
+            <p className="text-xs uppercase tracking-widest text-white/40">
+              Education
+            </p>
+          </div>
+          {education.map((edu, i) => (
+            <div
+              key={edu.school}
+              ref={(el) => {
+                itemRefs.current[experiences.length + i] = el;
+              }}
+              className="grid grid-cols-[5.5rem_2rem_1fr] md:grid-cols-[13rem_3rem_1fr] items-start min-h-[22vh]"
+              style={{ opacity: 0.25, transition: 'opacity 0.5s ease' }}
+            >
+              <p className="text-right text-base md:text-2xl font-bold tracking-tight text-white pt-0.5">
+                {edu.period}
+              </p>
+              <div className="flex justify-center pt-2">
+                <span className="w-3 h-3 rounded-full bg-blue-400 shadow-[0_0_10px_rgba(96,165,250,0.9)]" />
+              </div>
+              <div>
+                <h3 className="text-base md:text-xl font-semibold leading-tight">
+                  {edu.degree}
+                </h3>
+                <p className="text-xs md:text-sm text-white/50">{edu.school}</p>
               </div>
             </div>
           ))}
