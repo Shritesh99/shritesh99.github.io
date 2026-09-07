@@ -1,0 +1,265 @@
+@import 'tailwindcss';
+
+/* No global universal margin/padding reset here: Tailwind v4's preflight
+   already does it inside @layer base. An unlayered reset would win the
+   cascade over every layered padding/margin utility and zero them all out. */
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  /* Body copy = Ballega. Titles/subtitles override to Andromeda below. */
+  --font-sans: var(--font-ballega);
+  --font-mono: var(--font-geist-mono);
+  --font-geist: var(--font-geist-sans);
+  --font-andromeda: var(--font-andromeda);
+  --font-ballega: var(--font-ballega);
+}
+
+html,
+body,
+#__next {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  /* Regular text = Ballega, Geist as a legibility fallback. */
+  font-family:
+    var(--font-ballega),
+    var(--font-geist-sans),
+    system-ui,
+    -apple-system,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Titles & subtitles default to Andromeda. The `.reveal h*` selectors from
+   the reveal.js themes are more specific and still win inside decks. */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.subtitle {
+  font-family: var(--font-andromeda), sans-serif;
+  font-weight: 400;
+}
+
+.andromeda-regular {
+  font-family: var(--font-andromeda), sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.ballega-regular {
+  font-family: var(--font-ballega), sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* Handwritten reveal, Apple-ident style. The strokes in data/handwriting.ts
+   are centrelines, so hiding one with a full-length dash and animating the
+   offset to zero draws it in the direction it was written. HandwrittenText
+   measures each path and sets --stroke-length, plus its own delay and duration
+   so the strokes run in sequence. */
+.handwritten {
+  display: block;
+  /* height:auto lets the viewBox ratio set the height. Without it the SVG's
+     default height:100% resolves against an auto-height parent and collapses.
+     Width is set inline from the font size; max-width keeps it inside narrow
+     viewports, where aspect-ratio scales the height to match. */
+  max-width: 100%;
+  height: auto;
+  margin-inline: auto;
+  overflow: visible;
+}
+
+.handwritten[data-state='pending'] path,
+.handwritten[data-state='writing'] path {
+  stroke-dasharray: var(--stroke-length);
+  stroke-dashoffset: var(--stroke-length);
+}
+
+.handwritten[data-state='writing'] path {
+  animation: handwritten-draw var(--stroke-duration, 200ms) linear
+    var(--stroke-delay, 0ms) forwards;
+}
+
+@keyframes handwritten-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Smooth scrolling and performance optimizations - scoped to scrollable content only */
+.scroll-content {
+  perspective: 1000px;
+}
+
+/* Hide scrollbar while maintaining scroll functionality */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Leva UI z-index fix - most aggressive approach */
+.leva,
+.leva-root,
+.leva-panel,
+[data-leva] {
+  z-index: 999999 !important;
+  position: fixed !important;
+  pointer-events: auto !important;
+}
+
+/* Ensure Leva controls are not blocked by any overlay */
+.leva * {
+  pointer-events: auto !important;
+}
+
+/* Three.js Canvas optimization */
+canvas {
+  display: block;
+}
+
+/* Dev-only FPS/CPU/GPU panel. drei's <StatsGl> unconditionally strips the
+   inline styles stats-gl ships with, so the panel has to be placed here.
+   Top-left keeps it clear of the Leva panel. */
+.stats-gl {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100000;
+  display: flex;
+  gap: 2px;
+  pointer-events: none;
+}
+
+/* Skills marquee: the track holds two identical halves, so -50% loops
+   seamlessly. Duration/direction come from the component via CSS vars. */
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee var(--marquee-duration, 30s) linear infinite;
+}
+
+.marquee-track[data-reverse='true'] {
+  animation-direction: reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track {
+    animation: none;
+  }
+}
+
+/* Exchange title (skills page): outgoing letters roll up and out while the
+   incoming word's letters roll in from below, staggered per letter. */
+@keyframes xtitle-in {
+  from {
+    transform: translateY(115%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes xtitle-out {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-115%);
+    opacity: 0;
+  }
+}
+
+/* Glowing cards (slides index). SlideCards.tsx feeds each card the pointer
+   position in its own coordinate space via --glow-x/--glow-y, and a proximity
+   falloff via --glow-opacity. The short opacity transition is what smooths the
+   per-frame updates, so the light appears to trail the cursor. */
+.glow-card {
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-opacity: 0;
+  --glow-hue: 229;
+  position: relative;
+  border-radius: 1.25rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.02);
+  transition: background-color 0.3s ease-out;
+}
+
+.glow-card:hover {
+  background-color: rgba(255, 255, 255, 0.035);
+}
+
+.glow-card::before,
+.glow-card::after {
+  content: '';
+  position: absolute;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: var(--glow-opacity);
+  transition: opacity 0.25s ease-out;
+}
+
+/* The lit border: a radial gradient masked down to the 1px ring so only the
+   edge nearest the cursor glows. */
+.glow-card::before {
+  inset: -1px;
+  padding: 1px;
+  background: radial-gradient(
+    14rem 14rem at var(--glow-x) var(--glow-y),
+    hsl(var(--glow-hue) 95% 72%),
+    hsl(var(--glow-hue) 95% 68% / 0.4) 40%,
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+/* The spot on the card's backdrop. Content sits in a positioned wrapper so it
+   paints above this layer and stays crisp. */
+.glow-card::after {
+  inset: 0;
+  background: radial-gradient(
+    20rem 20rem at var(--glow-x) var(--glow-y),
+    hsl(var(--glow-hue) 90% 60% / 0.16),
+    transparent 65%
+  );
+}
+
+/* Hide the native cursor while the custom cursor overlay is active
+   (the Cursor component adds this class for fine pointers only) */
+@media (pointer: fine) {
+  body.custom-cursor,
+  body.custom-cursor * {
+    cursor: none !important;
+  }
+}

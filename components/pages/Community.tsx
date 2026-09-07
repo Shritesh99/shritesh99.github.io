@@ -1,0 +1,149 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { communityEvents, eventTypeLabels } from '@/data/portfolio';
+import { useScroll } from '@/context/ScrollContext';
+import { PAGE_HEIGHTS_VH } from '@/constants';
+
+const PAGE_INDEX = 4;
+// Sticky element (h-screen = 100vh) only pins for (sectionHeight - 100vh) of
+// scroll, so the slider must complete within pageProgress ∈ [0, STICKY_FRACTION].
+const STICKY_FRACTION =
+  (PAGE_HEIGHTS_VH[PAGE_INDEX] - 100) / PAGE_HEIGHTS_VH[PAGE_INDEX];
+// Finish the scrub before the sticky releases so the last panel rests fully
+// on screen for a beat (and any transform smoothing catches up) before the
+// next page slides in.
+const SCRUB_END = STICKY_FRACTION * 0.85;
+
+// Inner-image drift per px of panel distance from the viewport centre — the
+// photo slides gently inside its frame as the panel crosses the screen.
+const PARALLAX_FACTOR = 0.12;
+
+// Gap between the last panel and the viewport edge at the end of the scrub.
+const EDGE_MARGIN = 24;
+
+export default function Community() {
+  const { scrollRef, subscribe } = useScroll();
+  const trackRef = useRef<HTMLDivElement>(null);
+  const imgRefs = useRef<(HTMLImageElement | null)[]>([]);
+  const [sidePad, setSidePad] = useState(0);
+  const [maxTranslate, setMaxTranslate] = useState(0);
+  const [panelStep, setPanelStep] = useState(0); // panel width + gap
+  const [panelWidth, setPanelWidth] = useState(0);
+  const [vw, setVw] = useState(0);
+
+  useEffect(() => {
+    const measure = () => {
+      const track = trackRef.current;
+      const first = track?.children[0] as HTMLElement | undefined;
+      const second = track?.children[1] as HTMLElement | undefined;
+      if (!track || !first) return;
+      const width = window.innerWidth;
+      setVw(width);
+      setPanelWidth(first.offsetWidth);
+      setPanelStep(
+        second ? second.offsetLeft - first.offsetLeft : first.offsetWidth
+      );
+      // Left pad so the first panel starts viewport-centred. The right end only
+      // gets EDGE_MARGIN — the scrub finishes as soon as the last panel is
+      // fully on screen, not when it reaches the centre.
+      const pad = Math.max(0, (width - first.offsetWidth) / 2);
+      setSidePad(pad);
+      // Compute the track width arithmetically instead of measuring the DOM —
+      // a DOM read here could race React committing the new padding on resize.
+      const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      const count = track.children.length;
+      const total =
+        pad + count * first.offsetWidth + (count - 1) * gap + EDGE_MARGIN;
+      setMaxTranslate(Math.max(0, total - width));
+    };
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
+
+  // Per-tick scroll → track + inner-image transforms, written straight to the
+  // DOM so the panel list doesn't re-render 60 times/second.
+  useEffect(() => {
+    return subscribe((snap) => {
+      const track = trackRef.current;
+      if (!track) return;
+
+      // 0 → 1 across the pinned portion of this page's scroll.
+      const local =
+        snap.currentPage < PAGE_INDEX
+          ? 0
+          : snap.currentPage > PAGE_INDEX
+            ? 1
+            : Math.min(1, snap.pageProgress / SCRUB_END);
+      const translateX = -local * maxTranslate;
+
+      track.style.transform = `translate3d(${translateX}px, 0, 0)`;
+
+      if (!vw) return;
+      const halfVw = vw / 2;
+      for (let i = 0; i < imgRefs.current.length; i++) {
+        const img = imgRefs.current[i];
+        if (!img) continue;
+        const centerX = sidePad + i * panelStep + panelWidth / 2 + translateX;
+        const shift = (centerX - halfVw) * -PARALLAX_FACTOR;
+        img.style.transform = `translateX(calc(-50% + ${shift}px))`;
+      }
+    });
+    // scrollRef is stable; measurements above are the actual deps.
+  }, [subscribe, maxTranslate, sidePad, panelStep, panelWidth, vw, scrollRef]);
+
+  return (
+    <section
+      className="relative w-full"
+      style={{ height: `${PAGE_HEIGHTS_VH[PAGE_INDEX]}vh` }}
+      aria-label="Community"
+    >
+      {/* No heading — the near-fullscreen cards are the whole page. */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col justify-center">
+        <div className="relative w-full">
+            <div
+              ref={trackRef}
+              className="flex gap-6 md:gap-8 w-max will-change-transform"
+              style={{
+                paddingLeft: sidePad,
+                paddingRight: EDGE_MARGIN,
+              }}
+            >
+              {communityEvents.map((event, i) => (
+                <figure
+                  key={event.title}
+                  className="relative shrink-0 w-[90vw] md:w-[82vw] h-[72vh] md:h-[82vh] rounded-[28px] overflow-hidden border border-white/10"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    ref={(el) => {
+                      imgRefs.current[i] = el;
+                    }}
+                    src={event.image}
+                    alt={event.title}
+                    className="absolute inset-y-0 left-1/2 h-full w-[130%] max-w-none object-cover will-change-transform"
+                  />
+                  <div className="absolute inset-0 bg-black/35" />
+                  <figcaption className="absolute inset-0 flex items-center justify-center px-6">
+                    <span className="text-3xl sm:text-4xl md:text-5xl font-bold italic tracking-tight text-white text-center drop-shadow-[0_2px_16px_rgba(0,0,0,0.6)]">
+                      {event.title}
+                    </span>
+                  </figcaption>
+                  <div className="absolute bottom-0 inset-x-0 p-5 md:p-6 flex items-center justify-between gap-3">
+                    <span className="text-[11px] uppercase tracking-widest px-2.5 py-1 rounded-full border border-white/20 bg-black/40 backdrop-blur-md text-white/85">
+                      {eventTypeLabels[event.type]}
+                    </span>
+                    <span className="text-xs text-white/70">
+                      {event.date}
+                      {event.location ? ` · ${event.location}` : ''}
+                    </span>
+                  </div>
+                </figure>
+              ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
